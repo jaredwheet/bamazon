@@ -19,7 +19,7 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     programStart();
-    userPrompt();
+    
 
 });
 
@@ -28,7 +28,8 @@ function programStart() {
         for (var i = 0; i < response.length; i++) {
             console.log(response[i].product_name + " | " + response[i].department_name + " | " + response[i].price + " | " + response[i].stock_quantity);
         }
-        console.log("-----------------------------------");        
+        console.log("-----------------------------------");
+        userPrompt();
     })
 };
 
