@@ -9,3 +9,13 @@ VALUES ("Baseball Glove", "Sporting Goods", 109.99, 10, 0),
        ("Mouse", "Computers", 21.00, 75, 0),       
        ("Bicycle", "Sporting Goods", 89.99, 40, 0),
        ("Bananas", "Grocery", .99, 450, 0);
+
+INSERT INTO departments (department_name, over_head_costs)
+VALUES ("Sporting Goods", 1000),
+       ("Electronics", 1500),
+       ("Home", 2000),
+       ("Automotive", 3000),
+       ("Grocery", 2750),
+       ("School Supplies", 500),
+       ("Computers", 30000);
+       

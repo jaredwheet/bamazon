@@ -48,7 +48,7 @@ function supervisorStart() {
                 console.log("-------------------------------------------------------");
                 console.log("Please make an appropriate selection ")
                 console.log("-------------------------------------------------------");
-                programStart();
+                supervisorStart();
             }
         })
 }
@@ -60,10 +60,11 @@ function viewProductSales() {
         }
         else {
             for (var i = 0; i < response.length; i++) {
-                console.log(response[i].department_id + " | " + response[i].department_name + " | " + response[i].over_head_costs + " | " + response[i].product_sales + " | " + response[i].total_profit);
+                var total_profit = response[i].product_sales - response[i].over_head_costs;
+                console.log(response[i].department_id + " | " + response[i].department_name + " | " + response[i].over_head_costs + " | " + response[i].product_sales + " | " + total_profit);
             }
             console.log("-----------------------------------");
-            userPrompt();
+            
         }
     })
 }
