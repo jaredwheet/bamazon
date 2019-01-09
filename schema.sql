@@ -9,9 +9,15 @@ CREATE TABLE products (
   product_name VARCHAR(255) NOT NULL,
   department_name VARCHAR(255) NULL,
   price DECIMAL(10,2) NOT NULL,
-  stock_quanitity INT NULL,
+  stock_quantity INT NULL,
+  product_sales DECIMAL (10,2) NULL, 
   PRIMARY KEY (item_id)
 );
 
+CREATE TABLE departments (
+  department_id INT NOT NULL AUTO_INCREMENT,
+  department_name VARCHAR(255) NOT NULL,
+  over_head_costs DECIMAL(10,2) NULL,
+);
 
 
