@@ -1,5 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var Table = require('cli-table');
+require('dotenv').config();
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -11,7 +13,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "Devils12",
+    password: process.env.DATABASE_PASSWORD,
     database: "bamazon"
 });
 
@@ -46,25 +48,95 @@ function supervisorStart() {
             }
             else {
                 console.log("-------------------------------------------------------");
-                console.log("Please make an appropriate selection ")
+                console.log("Exiting Supervisor View");
                 console.log("-------------------------------------------------------");
-                supervisorStart();
+                conntection.end();
             }
         })
 }
 
 function viewProductSales() {
-    connection.query("SELECT * FROM departments", function (error, response) {
+    connection.query(`SELECT department_id, departments.department_name, over_head_costs, SUM(product_sales) AS productSales
+                        FROM departments
+                        INNER JOIN products ON departments.department_name=products.department_name
+                        GROUP BY departments.department_name;`, function (error, response) {
+            if (error) {
+                console.log(error);
+            }
+            else {
+                var table = new Table({
+                    head: ['Department ID', 'Department Name', 'Overhead Costs', 'Product Sales', 'Total Profit']
+                    , colWidths: [20, 20, 20, 20, 20]
+                });
+                for (var i = 0; i < response.length; i++) {
+                    var total_profit = response[i].productSales - response[i].over_head_costs;
+                    table.push(
+                        [response[i].department_id,
+                        response[i].department_name,
+                        response[i].over_head_costs,
+                        response[i].productSales,
+                            total_profit
+                        ]);
+                }
+                console.log("-----------------------------------");
+
+
+
+                console.log(table.toString());
+                supervisorStart();
+            }
+        })
+}
+
+function createDepartment() {
+    inquirer
+        .prompt([
+            {
+                name: "departmentName",
+                type: "input",
+                message: "What is the department name?"
+            },
+            {
+                name: "overheadCosts",
+                type: "input",
+                message: "What are the overhead costs?"
+            }])
+        .then(function (answer) {
+            var newDepartment = answer.departmentName;
+            var newOverheadCosts = answer.overheadCosts;
+            connection.query(`INSERT INTO departments (department_name, over_head_costs) VALUES ("${newDepartment}", "${newOverheadCosts}");`, function (error, response) {
+                if (error) {
+                    console.log(error)
+                }
+                else {
+                    displayDepartments();
+
+                }
+            })
+        })
+}
+
+function displayDepartments() {
+    connection.query(`SELECT * FROM departments;`, function (error, response) {
         if (error) {
-            console.log(error);
+            console.log(error)
         }
         else {
+            var table = new Table({
+                head: ['Department ID', 'Department Name', 'Overhead Costs']
+                , colWidths: [20, 20, 20,]
+            });
             for (var i = 0; i < response.length; i++) {
-                var total_profit = response[i].product_sales - response[i].over_head_costs;
-                console.log(response[i].department_id + " | " + response[i].department_name + " | " + response[i].over_head_costs + " | " + response[i].product_sales + " | " + total_profit);
+                table.push(
+                    [response[i].department_id,
+                    response[i].department_name,
+                    response[i].over_head_costs,
+                    ]);
             }
-            console.log("-----------------------------------");
-            
+            console.log("---------------------------------------------------");
+            console.log(table.toString());
+            console.log("---------------------------------------------------")
+            supervisorStart();
         }
     })
 }

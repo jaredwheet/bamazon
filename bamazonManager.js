@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+require('dotenv').config();
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -11,7 +12,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "Devils12",
+    password: process.env.DATABASE_PASSWORD,
     database: "bamazon"
 });
 
@@ -105,9 +106,9 @@ function addToInventory() {
                 updateQuantity(itemQuanity, itemID)
             })
 }
-function addProduct (name, dept, price, quantity){
-    connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity)
-    VALUES ("${name}", "${dept}", ${price}, ${quantity})`, function (error, result){
+function addProduct (name, dept, price, quantity, productSales){
+    connection.query(`INSERT INTO products (product_name, department_name, price, stock_quantity, product_sales)
+    VALUES ("${name}", "${dept}", ${price}, ${quantity}, ${productSales})`, function (error, result){
         if (error){
             console.log(error)
         }
@@ -142,12 +143,19 @@ function newProductInfo () {
                 name: "itemQuantity",
                 type: "input",
                 message: "How many would of these items are in the inventory?",
+            },
+            {
+                name: "productSales",
+                type: "input",
+                message: "What are the product's sales?",
+            
             }]).then(function (answer) {
                 var itemName = answer.itemName;
                 var itemDept = answer.itemDept;
                 var itemPrice = answer.itemPrice;
                 var itemQuantity = answer.itemQuantity;
-                addProduct(itemName, itemDept, itemPrice, itemQuantity)
+                var productsSales = answer.productSales;
+                addProduct(itemName, itemDept, itemPrice, itemQuantity, productsSales)
             })
 }
 

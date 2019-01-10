@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+require('dotenv').config()
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -11,20 +12,18 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "Devils12",
+    password: process.env.DATABASE_PASSWORD,
     database: "bamazon"
 });
 
 connection.connect(function (err) {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadId);
-    programStart();
-    
+    if (err) throw err;    
+    programStart();    
 });
 
-function programStart() {
-    
+function programStart() {    
     connection.query("SELECT * FROM products", function (error, response) {
+        console.log("-----------------------------------")
         for (var i = 0; i < response.length; i++) {            
             console.log(response[i].item_id + " | " + response[i].product_name + " | " + response[i].department_name + " | " + response[i].price + " | " + response[i].stock_quantity + " | " + response[i].product_sales);
         }
@@ -82,10 +81,11 @@ function userPrompt() {
                 console.log(error)
             }
             else {
-                console.log(result)
+                console.log("-----------------------------------")          
             }
         })
     }
+                
 
     function updateProductSales(currentSales, thisSaleTotal, ID){        
         var newProductSales = currentSales + thisSaleTotal;        
@@ -94,10 +94,10 @@ function userPrompt() {
                 console.log(error)
             }
             else {
-                console.log(result)
-                
+                console.log("-----------------------------------")
             }
         })
     }
 
 }
+                
