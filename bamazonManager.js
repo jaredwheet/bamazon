@@ -72,7 +72,7 @@ function updateQuantity(quantityToAdd, ID) {
             console.log(error)
         }
         else {
-            var newQuantity = responseOne[0].stock_quantity + quantityToAdd
+            var newQuantity = parseInt(responseOne[0].stock_quantity) + parseInt(quantityToAdd)
             connection.query(`UPDATE products SET stock_quantity = "${newQuantity}" WHERE item_id = "${ID}"`, function (error, result) {
                 if (error) {
                     console.log(error)

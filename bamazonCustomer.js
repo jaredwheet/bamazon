@@ -25,7 +25,7 @@ function programStart() {
     connection.query("SELECT * FROM products", function (error, response) {
         console.log("-----------------------------------")
         for (var i = 0; i < response.length; i++) {            
-            console.log(response[i].item_id + " | " + response[i].product_name + " | " + response[i].department_name + " | " + response[i].price + " | " + response[i].stock_quantity + " | " + response[i].product_sales);
+            console.log(response[i].item_id + " | " + response[i].product_name + " | " + response[i].department_name + " | " + response[i].price + " | " + response[i].stock_quantity);
         }
         console.log("-----------------------------------");
         userPrompt();
@@ -33,6 +33,7 @@ function programStart() {
     })
 };
 
+//Function to get user input
 function userPrompt() {
     inquirer
         .prompt([
@@ -72,9 +73,9 @@ function userPrompt() {
                 }
             })
 
-            // connection.end()
+            
         })
-
+// function to update the quantity based on user input
     function updateQuantity(newQuantity, ID) {
         connection.query(`UPDATE products SET stock_quantity = "${newQuantity}" WHERE item_id = "${ID}"`, function (error, result) {
             if (error) {
@@ -86,7 +87,7 @@ function userPrompt() {
         })
     }
                 
-
+//function to update product sales based on user input 
     function updateProductSales(currentSales, thisSaleTotal, ID){        
         var newProductSales = currentSales + thisSaleTotal;        
         connection.query(`UPDATE products SET product_sales = ${newProductSales} WHERE item_id = ${ID}`, function (error, result){
