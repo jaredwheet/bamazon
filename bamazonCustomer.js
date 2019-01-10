@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-require('dotenv').config()
+require('dotenv').config();
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -17,19 +17,21 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function (err) {
-    if (err) throw err;    
-    programStart();    
+    if (err) throw err;
+    programStart();
 });
 
-function programStart() {    
+function programStart() {
     connection.query("SELECT * FROM products", function (error, response) {
-        console.log("-----------------------------------")
-        for (var i = 0; i < response.length; i++) {            
+        console.log("-------------------------------------------------------");
+        console.log("ITEM ID.....ITEM NAME.....ITEM PRICE.....ITEM QUANTITY");
+        console.log("-------------------------------------------------------");
+        for (var i = 0; i < response.length; i++) {
             console.log(response[i].item_id + " | " + response[i].product_name + " | " + response[i].department_name + " | " + response[i].price + " | " + response[i].stock_quantity);
-        }
-        console.log("-----------------------------------");
+        };
+        console.log("-------------------------------------------------------");
         userPrompt();
-        
+
     })
 };
 
@@ -49,56 +51,60 @@ function userPrompt() {
 
             }])
         .then(function (answer) {
-            if (answer.itemID.toLowerCase() === "exit" || answer.itemQuantity.toLowerCase() === "exit"){
+            if (answer.itemID.toLowerCase() === "exit" || answer.itemQuantity.toLowerCase() === "exit") {
+                console.log("Exiting Customer View");
                 return connection.end()
             }
-            var userItemToBuy = parseInt(answer.itemID)
-            var userQuantityToBuy = parseInt(answer.itemQuantity)            
-            
+            var userItemToBuy = parseInt(answer.itemID);
+            var userQuantityToBuy = parseInt(answer.itemQuantity);
+
             // based on their answer, check if enough supply
             connection.query(`SELECT * FROM products WHERE item_id = ${userItemToBuy}`, function (error, responseOne) {
                 var selectedItemQuantity = responseOne[0].stock_quantity;
                 var updatedQuantity = selectedItemQuantity - userQuantityToBuy;
-                var currentProductSales = parseInt(responseOne[0].product_sales);                
+                var currentProductSales = parseInt(responseOne[0].product_sales);
                 var itemPrice = parseInt(responseOne[0].price);
                 var thisSaleTotal = itemPrice * userQuantityToBuy;
                 if (userQuantityToBuy > selectedItemQuantity) {
+                    console.log("-----------------------------------");
                     console.log("Insuficcient Quantity!");
+                    console.log("-----------------------------------");
+                    programStart();
 
                 }
                 else {
                     updateQuantity(updatedQuantity, userItemToBuy);
                     updateProductSales(currentProductSales, thisSaleTotal, userItemToBuy);
-                    programStart()
-                }
-            })
+                    programStart();
+                };
+            });
 
-            
-        })
-// function to update the quantity based on user input
+
+        });
+    // function to update the quantity based on user input
     function updateQuantity(newQuantity, ID) {
         connection.query(`UPDATE products SET stock_quantity = "${newQuantity}" WHERE item_id = "${ID}"`, function (error, result) {
             if (error) {
-                console.log(error)
+                console.log(error);
             }
             else {
-                console.log("-----------------------------------")          
-            }
-        })
-    }
-                
-//function to update product sales based on user input 
-    function updateProductSales(currentSales, thisSaleTotal, ID){        
-        var newProductSales = currentSales + thisSaleTotal;        
-        connection.query(`UPDATE products SET product_sales = ${newProductSales} WHERE item_id = ${ID}`, function (error, result){
-            if (error){
-                console.log(error)
-            }
-            else {
-                console.log("-----------------------------------")
-            }
-        })
-    }
+                console.log("-----------------------------------");
+            };
+        });
+    };
 
-}
-                
+    //function to update product sales based on user input 
+    function updateProductSales(currentSales, thisSaleTotal, ID) {
+        var newProductSales = currentSales + thisSaleTotal;
+        connection.query(`UPDATE products SET product_sales = ${newProductSales} WHERE item_id = ${ID}`, function (error, result) {
+            if (error) {
+                console.log(error);
+            }
+            else {
+                console.log("-----------------------------------");
+            };
+        });
+    };
+
+};
+
